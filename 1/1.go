@@ -19,9 +19,8 @@ type Action struct {
 }
 
 func main() {
-	ac := Action{} // Инициализация структуры
-	ac = Action{Human{"Alex"}}
-	ac = Action{Human: Human{"Alex"}}
+	ac := Action{Human{"Alex"}} // Инициализация структуры
+	// ac = Action{Human: Human{"Alex"}}
 	// У объекта Action можно неявно вызвать метод принадлежащий Human SayHello()
 	ac.SayHello() // I am Human, my name is Alex
 	// Так же можно явно вызвать этот метод

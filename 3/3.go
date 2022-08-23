@@ -7,7 +7,7 @@ import (
 )
 
 type task3 struct {
-	arr   [5]int
+	arr   []int
 	mutex sync.Mutex
 	wg    sync.WaitGroup
 }
@@ -17,25 +17,26 @@ type task3 struct {
 Найти сумму их квадратов(2*2+3*3+4*4….) с использованием конкурентных вычислений.
 */
 func main() {
-	arr := [5]int{2, 4, 6, 8, 10}
+	arr := []int{2, 4, 6, 8, 10}
 	var sum int
 
 	for _, n := range arr {
 		go square(&sum, n)
 	}
 
-	time.Sleep(5 * time.Second)
+	time.Sleep(5 * time.Millisecond)
 
 	fmt.Println(sum)
 	SolutionMutex(arr)
+	SolutionChannel(arr)
 }
 
 func square(sum *int, n int) {
 	*sum += n * n
-	fmt.Println(*sum)
+	// fmt.Println(*sum)
 }
 
-func SolutionMutex(nums [5]int) {
+func SolutionMutex(nums []int) {
 	var sum int
 	task := task3{arr: nums}
 	task.wg.Add(len(task.arr))
@@ -48,5 +49,22 @@ func SolutionMutex(nums [5]int) {
 		}(v)
 	}
 	task.wg.Wait()
-	fmt.Println("sum :=", sum)
+	fmt.Println("sum Mutex :=", sum)
+}
+
+func SolutionChannel(nums []int) {
+	ch := make(chan int, 1)
+	task := task3{arr: nums}
+	ch <- 0
+	for _, value := range task.arr {
+		task.wg.Add(1)
+		go func(w *sync.WaitGroup, v int, c chan int) {
+			c <- (v * v) + <-c
+			task.wg.Done()
+		}(&task.wg, value, ch)
+	}
+	task.wg.Wait()
+	close(ch)
+	fmt.Println("sum Channel :=", <-ch)
+
 }

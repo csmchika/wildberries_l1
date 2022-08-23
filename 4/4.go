@@ -28,10 +28,9 @@ func main() {
 	}
 
 	//Завершение работы по ctrl + c
-	ctrl := make(chan os.Signal)
+	ctrl := make(chan os.Signal, 1)
 	signal.Notify(ctrl, os.Interrupt, syscall.SIGTERM)
 	<-ctrl
-	fmt.Println("exit after ctrl c")
 	os.Exit(1)
 }
 
